@@ -5,6 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyPage } from "../hooks";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ArticleType } from "@/types/article";
 import { UserType } from "@/types/user";
 import PrimaryButton from "@/components/common/PrimaryButton";
@@ -23,10 +29,15 @@ export default function MyPage({
     setUserData,
     likedArticles,
     handleUpdate,
+    handleFileChange,
     handleLoadMore,
     hasLoadedMore,
+    avatarPreview,
+    isUpdating,
+    error,
   } = useMyPage(user, initialLikedArticles);
 
+  console.log(userData);
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
@@ -36,16 +47,37 @@ export default function MyPage({
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center space-y-4">
-              <Avatar className="w-24 h-24">
-                <AvatarImage src={userData.icon} alt="ユーザーアイコン" />
-                <AvatarFallback>UN</AvatarFallback>
-              </Avatar>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="relative">
+                      <Avatar className="w-24 h-24">
+                        <AvatarImage
+                          src={avatarPreview || ""}
+                          alt="ユーザーアイコン"
+                        />
+                        <AvatarFallback>UN</AvatarFallback>
+                      </Avatar>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        title=""
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>ファイルを選択する</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <div className="w-full max-w-sm space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="nickname">ニックネーム</Label>
                   <Input
                     id="nickname"
-                    value={userData.nickname}
+                    value={userData?.nickname || ""}
                     onChange={(e) =>
                       setUserData({ ...userData, nickname: e.target.value })
                     }
@@ -53,9 +85,10 @@ export default function MyPage({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">メールアドレス</Label>
-                  <Input id="email" value={userData.email} disabled />
+                  <Input id="email" value={userData?.email || ''} disabled />
                 </div>
                 <PrimaryButton onClick={handleUpdate}>更新する</PrimaryButton>
+                {error &&<div className="text-red-500 text-sm text-center">{error}</div>}
               </div>
             </div>
           </CardContent>

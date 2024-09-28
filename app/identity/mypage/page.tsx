@@ -1,6 +1,7 @@
 import MyPage from "@/features/routes/identity/mypage/components/index";
 import { ArticleType } from "@/types/article";
-import { UserType } from "@/types/user";
+import { createClient } from "@/lib/supabase/client/serverClient";
+import { redirect } from "next/navigation";
 
 const likedArticles: ArticleType[] = [
   {
@@ -46,15 +47,23 @@ const likedArticles: ArticleType[] = [
   },
 ];
 
-const user: UserType = {
-  icon: "/placeholder.svg",
-  nickname: "ユーザー名",
-  email: "user@example.com",
-};
+export default async function Page() {
+  const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+  const auth = data?.user;
+  if (!auth) {
+    redirect("/login");
+  }
 
-export default function Page() {
-  // ここでデータをフェッチする想定です。
-  // 今はモックデータを使用します。
+  const { data: user, error: userError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", auth.id)
+    .single();
+
+  if (!user || userError) {
+    redirect("/login");
+  }
 
   return <MyPage likedArticles={likedArticles} user={user} />;
 }

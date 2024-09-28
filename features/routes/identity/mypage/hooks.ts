@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { ArticleType } from "@/types/article";
 import { UserType } from "@/types/user";
+import { createClient } from "@/lib/supabase/client/browserClient";
+import { useRouter } from 'next/navigation';
 
 const addArticles: ArticleType[] = [
   {
@@ -49,15 +51,120 @@ const addArticles: ArticleType[] = [
 ];
 
 export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
+  const supabase = createClient();
+  // supabase.storage;
   const [userData, setUserData] = useState<UserType>(user);
+  const [email, setEmail] = useState<string>(user.email);
+  const [nickname, setNickName] = useState<string>(user?.nickname || '');
   const [likedArticles, setLikedArticles] =
     useState<ArticleType[]>(initialLikedArticles);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    userData?.avatar_url || null
+  );
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleUpdate = () => {
-    // ユーザー情報の更新処理をここに実装
-    console.log("Update user info", userData);
-  };
+  const router = useRouter();
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        setAvatarFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setAvatarPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    []
+  );
+
+  const handleUpdate = useCallback(async () => {
+    setIsUpdating(true);
+    setError(null);
+
+    try {
+      let avatar_url = userData.avatar_url;
+      let new_avatar_path: string | null = null;
+      let old_avatar_path: string | null = userData.avatar_url || null;
+
+      // 新しいアバター画像が選択されている場合、Supabase Storage にアップロード
+      if (avatarFile) {
+        const fileExt = avatarFile.name.split('.').pop();
+        const fileName = `${userData.id}-${Date.now()}.${fileExt}`;
+        const filePath = `${userData.id}/${fileName}`;
+
+        // 画像をアップロード
+        const { data: uploadData, error: uploadError } = await supabase
+          .storage
+          .from('user_avatars') // バケット名を 'user_avatars' に設定
+          .upload(filePath, avatarFile, {
+            upsert: true, // 既存のファイルがあれば上書き
+            cacheControl: '3600',
+          });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        // パブリックURLを取得（バケットが公開設定の場合）
+        const { data: publicURL} = supabase
+          .storage
+          .from('user_avatars')
+          .getPublicUrl(filePath);
+
+        if (!publicURL) {
+          throw ('画像URLを取得できませんでした');
+        }
+
+        avatar_url = publicURL.publicUrl;
+        setAvatarPreview(avatar_url);
+        setUserData({ ...userData, avatar_url: avatar_url })
+        new_avatar_path = filePath;
+      }
+
+      // users テーブルの nickname, avatar_url, avatar_path を更新
+      const { data: updateData, error: updateError } = await supabase
+        .from('users')
+        .update({
+          nickname: userData.nickname,
+          avatar_url: avatar_url,
+        })
+        .eq('id', userData.id)
+        .single();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // 古いアバター画像を削除（デフォルト画像でない場合）
+      if (old_avatar_path && old_avatar_path !== "default_avatar.png") { // デフォルト画像のパスを適宜変更
+        const { error: deleteError } = await supabase
+          .storage
+          .from('user_avatars')
+          .remove([old_avatar_path]);
+
+        if (deleteError) {
+          console.error("古いアバター画像の削除に失敗しました:", deleteError);
+          // 必要に応じてエラーハンドリングを追加
+        }
+      }
+      //router.prefetch("/identity/mypage");
+      window.location.reload()
+      // ローカルのユーザーデータを更新
+      setUserData(updateData);
+      setAvatarFile(null); // アップロード後にファイルをリセット
+    } catch (err: any) {
+      console.error("ユーザー情報の更新中にエラーが発生しました:", err);
+      setError(err.message || "予期せぬエラーが発生しました。");
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [supabase, userData, avatarFile]);
 
   const handleLoadMore = () => {
     setLikedArticles((prevArticles) => [...prevArticles, ...addArticles]);
@@ -68,8 +175,12 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
     userData,
     setUserData,
     likedArticles,
+    handleFileChange,
     handleUpdate,
     handleLoadMore,
     hasLoadedMore,
+    avatarPreview,
+    isUpdating,
+    error,
   };
 }
