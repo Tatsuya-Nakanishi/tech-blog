@@ -46,7 +46,7 @@ export default function Component({ articles, heading }: PropType) {
 
   return (
     <>
-      <PrimaryButton onClick={handleFetchBlogs}>データフェッチ</PrimaryButton>
+      {/* <PrimaryButton onClick={handleFetchBlogs}>データフェッチ</PrimaryButton> */}
       <ArticleList articles={articles} heading={heading} />
     </>
   );

@@ -3,7 +3,12 @@ import Avatar from "@/components/common/Avatar";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import Tag from "@/components/common/Tag";
 
-export default function Components() {
+type PropType = {
+  categories: { name: string }[];
+  archives: string[];
+}
+
+export default function Components({ categories, archives }: PropType) {
   return (
     <aside className="md:w-1/3 mt-8 md:mt-0">
       <div className="bg-gray-100 p-4 rounded mb-8">
@@ -54,18 +59,9 @@ export default function Components() {
       <div className="bg-gray-100 p-4 rounded mb-8">
         <h3 className="text-xl font-semibold mb-4">カテゴリー</h3>
         <div className="flex flex-wrap gap-2">
-          {[
-            "React",
-            "Next.js",
-            "TypeScript",
-            "React Native",
-            "Expo",
-            "Jest",
-            "Firebase",
-            "ブログ",
-          ].map((category) => (
-            <Link href={`/category/${category}`} key={category}>
-              <Tag backgroundColor="bg-gray-200">#{category}</Tag>
+           {categories.length > 0 && categories.map((category, index) => (
+              <Link href={`/category/${category.name}`} key={index}>
+              <Tag backgroundColor="bg-gray-200">#{category.name}</Tag>
             </Link>
           ))}
         </div>
@@ -74,21 +70,11 @@ export default function Components() {
       <div className="bg-gray-100 p-4 rounded">
         <h3 className="text-xl font-semibold mb-4">アーカイブ</h3>
         <ul className="space-y-2">
-          <li>
-            <Link href="#" className="text-gray-600 hover:text-purple-600">
-              2021年8月
+          {archives.length > 0 && archives.map((archive, index) => (
+            <Link href={`/archives/${archive}`} className="text-gray-600 hover:text-purple-600" key={index}>
+              {archive}
             </Link>
-          </li>
-          <li>
-            <Link href="#" className="text-gray-600 hover:text-purple-600">
-              2021年5月
-            </Link>
-          </li>
-          <li>
-            <Link href="#" className="text-gray-600 hover:text-purple-600">
-              2021年4月
-            </Link>
-          </li>
+          ))}
         </ul>
       </div>
     </aside>

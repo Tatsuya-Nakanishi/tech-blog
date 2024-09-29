@@ -1,4 +1,4 @@
-import CategoryName from "@/features/routes/category/category_name/components/index";
+import YearMonth from "@/features/routes/year_month/components";
 
 const articles = [
   {
@@ -47,9 +47,8 @@ const articles = [
 export default function Page({
   params,
 }: {
-  params: { category_name: string };
+  params: { year_month: string };
 }) {
-  const { category_name } = params;
-
-  return <CategoryName articles={articles} heading={category_name} />;
+  const { year_month } = params;
+  return <YearMonth articles={articles} heading={year_month} />;
 }
