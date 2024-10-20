@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Avatar from "@/components/common/Avatar";
 import { useArticleDetail } from "../hooks";
@@ -8,17 +8,31 @@ import { ArticleType } from "@/types/article";
 import { CommentType } from "@/types/comment";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import Tag from "@/components/common/Tag";
+import { format } from 'date-fns';
+import { UserType } from "@/types/user";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Link from "next/link";
 
 type ArticleDetailProps = {
   article: ArticleType;
   initialLikes: number;
   initialComments: CommentType[];
+  user: UserType | null;
+  isLiked: boolean;
 };
 
 export default function Component({
   article,
   initialLikes,
   initialComments,
+  user,
+  isLiked
 }: ArticleDetailProps) {
   const {
     likes,
@@ -27,16 +41,20 @@ export default function Component({
     newComment,
     setNewComment,
     handleCommentSubmit,
+    handleCommentDelete,
     tableOfContents,
-  } = useArticleDetail(initialLikes, initialComments, article);
-
+    isLoginModalOpen,
+    setIsLoginModalOpen,
+    isAlreadyLiked
+  } = useArticleDetail(initialLikes, initialComments, article, user, isLiked);
+  console.log(comments);
   return (
     <div className="md:w-2/3 md:pr-8">
       <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
       <div className="mb-6 flex items-center space-x-4">
         <div className="flex space-x-2">
-          {article.tags.map((tag, index) => (
-            <Tag key={index}>#{tag}</Tag>
+          {article.categories.map((category, index) => (
+            <Tag key={index}>#{category}</Tag>
           ))}
         </div>
         <button
@@ -45,16 +63,16 @@ export default function Component({
         >
           <Heart
             className={`w-5 h-5 ${
-              likes > 0 ? "fill-current text-red-500" : ""
+              isAlreadyLiked ? "fill-current text-red-500" : ""
             }`}
           />
           <span>{likes}</span>
         </button>
       </div>
-      <div className="mb-2 text-gray-500">{article.date}</div>
+      <div className="mb-2 text-gray-500">{format(new Date(article.created_at), 'yyyy年MM月dd日')}</div>
       <div className="mb-6">
         <img
-          src={article.imageUrl}
+          src={article.image_url || ''}
           alt={article.title}
           className="w-full h-auto rounded-lg"
         />
@@ -77,13 +95,13 @@ export default function Component({
         </ul>
       </div>
       <div
-        dangerouslySetInnerHTML={{ __html: article.summary }}
-        className="prose"
+        dangerouslySetInnerHTML={{ __html: article.content }}
+        className="prose max-w-none"
       />
       {/* コメントセクション */}
       <div className="mt-12">
         <h2 className="text-2xl font-bold mb-4">コメント</h2>
-        {comments.map((comment) => (
+        {comments.length > 0 && comments.map((comment) => (
           <div key={comment.id} className="mb-4 bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center mb-2">
               <Avatar
@@ -96,6 +114,15 @@ export default function Component({
                 <div className="text-sm text-gray-500">{comment.date}</div>
               </div>
             </div>
+            {user && user.id === comment.userId && (
+                <button
+                  onClick={() => handleCommentDelete(comment.id)}
+                  className="text-red-500 hover:text-red-700"
+                  aria-label="コメントを削除"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              )}
             <p>{comment.content}</p>
           </div>
         ))}
@@ -111,6 +138,26 @@ export default function Component({
           </PrimaryButton>
         </form>
       </div>
+      <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+        <DialogContent className="bg-white p-6 max-w-sm mx-auto">
+          <div className="flex flex-col items-center">
+            <DialogHeader className="text-center mb-4">
+              <DialogTitle className="text-xl font-semibold mb-2">ログインが必要です</DialogTitle>
+              <DialogDescription className="text-sm text-gray-600">
+                いいねまたはコメントをするにはログインが必要です。<br />ログインページに移動しますか？
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-center space-x-4 w-full mt-6">
+              <PrimaryButton onClick={() => setIsLoginModalOpen(false)} className="w-1/2">
+                キャンセル
+              </PrimaryButton>
+              <Link href="/login" className="w-1/2">
+                <PrimaryButton className="w-full">ログインページへ</PrimaryButton>
+              </Link>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

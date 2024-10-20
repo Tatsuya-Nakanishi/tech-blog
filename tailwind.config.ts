@@ -57,8 +57,21 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      typography: (theme: any) => ({
+        DEFAULT: {
+          css: {
+            'h1': {
+              '@apply text-2xl font-bold mb-4 mt-8 p-2 bg-blue-100 rounded w-full': {},
+            },
+            // 他の要素のカスタマイズも可能
+          },
+        },
+      }),
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require('@tailwindcss/typography'), 
+    require("tailwindcss-animate")
+  ],
 };
 export default config;

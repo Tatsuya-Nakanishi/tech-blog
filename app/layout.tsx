@@ -46,7 +46,7 @@ export default async function RootLayout({
       user = profile;
     }
   }
-  console.log(user);
+  
   return (
     <html lang="en">
       <body

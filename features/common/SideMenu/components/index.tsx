@@ -71,9 +71,11 @@ export default function Components({ categories, archives }: PropType) {
         <h3 className="text-xl font-semibold mb-4">アーカイブ</h3>
         <ul className="space-y-2">
           {archives.length > 0 && archives.map((archive, index) => (
-            <Link href={`/archives/${archive}`} className="text-gray-600 hover:text-purple-600" key={index}>
-              {archive}
-            </Link>
+            <li key={index}>
+              <Link href={`/archives/${archive}`} className="text-gray-600 hover:text-purple-600">
+                {archive}
+              </Link>
+            </li>
           ))}
         </ul>
       </div>

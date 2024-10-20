@@ -4,69 +4,20 @@ import { useState, useCallback, useRef } from "react";
 import { ArticleType } from "@/types/article";
 import { UserType } from "@/types/user";
 import { createClient } from "@/lib/supabase/client/browserClient";
-import { useRouter } from 'next/navigation';
 
-const addArticles: ArticleType[] = [
-  {
-    id: 6,
-    title: "Next.jsのパフォーマンス最適化",
-    date: "2021.9.1",
-    tags: ["Next.js", "Performance"],
-    summary:
-      "Next.jsアプリケーションのパフォーマンスを向上させる方法を解説します。",
-    imageUrl: "/images/nextjs_performance.jpg",
-  },
-  {
-    id: 7,
-    title: "GraphQL入門",
-    date: "2021.9.10",
-    tags: ["GraphQL", "API"],
-    summary: "GraphQLの基本的な概念と使い方を学びます。",
-    imageUrl: "/images/graphql_intro.jpg",
-  },
-  {
-    id: 8,
-    title: "Webpackの基本",
-    date: "2021.9.15",
-    tags: ["Webpack", "Module Bundler"],
-    summary: "Webpackを使ってプロジェクトを構築する方法を説明します。",
-    imageUrl: "/images/webpack_basics.jpg",
-  },
-  {
-    id: 9,
-    title: "Dockerによる開発環境構築",
-    date: "2021.9.20",
-    tags: ["Docker", "DevOps"],
-    summary: "Dockerを使った開発環境の構築方法を紹介します。",
-    imageUrl: "/images/docker_dev_env.jpg",
-  },
-  {
-    id: 10,
-    title: "CI/CDパイプラインの構築",
-    date: "2021.9.25",
-    tags: ["CI/CD", "DevOps"],
-    summary: "継続的インテグレーションとデプロイのパイプラインを構築します。",
-    imageUrl: "/images/ci_cd_pipeline.jpg",
-  },
-];
-
-export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
+export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], initialHasMore: boolean) {
   const supabase = createClient();
-  // supabase.storage;
   const [userData, setUserData] = useState<UserType>(user);
-  const [email, setEmail] = useState<string>(user.email);
-  const [nickname, setNickName] = useState<string>(user?.nickname || '');
   const [likedArticles, setLikedArticles] =
     useState<ArticleType[]>(initialLikedArticles);
-  const [hasLoadedMore, setHasLoadedMore] = useState(false);
+  const [hasMore, setHasMore] = useState(initialHasMore);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
     userData?.avatar_url || null
   );
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const router = useRouter();
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,13 +34,12 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
     []
   );
 
-  const handleUpdate = useCallback(async () => {
-    setIsUpdating(true);
+  const handleProfileUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     setError(null);
+    e.preventDefault();
 
     try {
       let avatar_url = userData.avatar_url;
-      let new_avatar_path: string | null = null;
       let old_avatar_path: string | null = userData.avatar_url || null;
 
       // 新しいアバター画像が選択されている場合、Supabase Storage にアップロード
@@ -99,7 +49,7 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
         const filePath = `${userData.id}/${fileName}`;
 
         // 画像をアップロード
-        const { data: uploadData, error: uploadError } = await supabase
+        const { error: avatarUpdateError } = await supabase
           .storage
           .from('user_avatars') // バケット名を 'user_avatars' に設定
           .upload(filePath, avatarFile, {
@@ -107,8 +57,8 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
             cacheControl: '3600',
           });
 
-        if (uploadError) {
-          throw uploadError;
+        if (avatarUpdateError) {
+          throw avatarUpdateError;
         }
 
         // パブリックURLを取得（バケットが公開設定の場合）
@@ -124,11 +74,10 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
         avatar_url = publicURL.publicUrl;
         setAvatarPreview(avatar_url);
         setUserData({ ...userData, avatar_url: avatar_url })
-        new_avatar_path = filePath;
       }
 
       // users テーブルの nickname, avatar_url, avatar_path を更新
-      const { data: updateData, error: updateError } = await supabase
+      const { error: updateError } = await supabase
         .from('users')
         .update({
           nickname: userData.nickname,
@@ -153,22 +102,82 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
           // 必要に応じてエラーハンドリングを追加
         }
       }
-      //router.prefetch("/identity/mypage");
-      window.location.reload()
-      // ローカルのユーザーデータを更新
-      setUserData(updateData);
-      setAvatarFile(null); // アップロード後にファイルをリセット
+      window.location.reload();
     } catch (err: any) {
       console.error("ユーザー情報の更新中にエラーが発生しました:", err);
       setError(err.message || "予期せぬエラーが発生しました。");
     } finally {
-      setIsUpdating(false);
     }
-  }, [supabase, userData, avatarFile]);
+  };
 
-  const handleLoadMore = () => {
-    setLikedArticles((prevArticles) => [...prevArticles, ...addArticles]);
-    setHasLoadedMore(true);
+  const loadMoreLikedArticles = async (page: number, pageSize: number = 5) => {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize - 1;
+
+    const { data: likedArticlesData, error: likesError, count: likedArticleCount} = await supabase
+    .from("likes")
+    .select(`
+      article_id,
+      articles (
+        id,
+        title,
+        created_at,
+        content,
+        description,
+        image_url,
+        article_categories (
+          categories (
+            name
+          )
+        )
+      )
+    `, { count: 'exact' })
+    .eq("user_id", user.id)
+    .order('created_at', { ascending: false })
+    .range(start, end);
+
+  if (likesError) {
+    console.error("いいねした記事の取得エラー:", likesError);
+    // エラーハンドリングを適切に行う（例: エラーページにリダイレクトなど）
+  }
+
+  const likedArticles: ArticleType[] = likedArticlesData
+     ? likedArticlesData
+      .filter((like): like is typeof like & { articles: NonNullable<typeof like['articles']> } => 
+        like.articles !== null && like.articles !== undefined
+      )
+      .map(like => ({
+        id: like.articles.id,
+        title: like.articles.title,
+        content: like.articles.content,
+        image_url: like.articles.image_url,
+        description: like.articles.description,
+        created_at: like.articles.created_at,
+        categories: like.articles.article_categories
+          .map(ac => ac.categories?.name)
+          .filter((name): name is string => name !== null && name !== undefined),
+      }))
+  : [];
+
+    const hasMore = likedArticleCount ? likedArticleCount > ((page + 1) * pageSize) : false;
+
+    return { articles: likedArticles, hasMore };
+  };
+  const handleLoadMore = async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    try {
+      const nextPage = page + 1;
+      const { articles: newArticles, hasMore: newHasMore } = await loadMoreLikedArticles(nextPage);
+      setLikedArticles(prevArticles => [...prevArticles, ...newArticles]);
+      setHasMore(newHasMore);
+      setPage(nextPage);
+    } catch (error) {
+      console.error("記事の読み込みに失敗しました:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
@@ -176,11 +185,10 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[]) {
     setUserData,
     likedArticles,
     handleFileChange,
-    handleUpdate,
+    handleProfileUpdate,
     handleLoadMore,
-    hasLoadedMore,
+    hasMore,
     avatarPreview,
-    isUpdating,
     error,
   };
 }

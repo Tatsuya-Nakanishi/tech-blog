@@ -58,10 +58,10 @@ export async function GET(request: Request) {
       content: blog.content,
       image_url: blog.eyecatch?.url || null,
       description: blog.description || null,
-      published_at: new Date().toISOString(),
+      published_at: String(blog.publishedAt),
       is_deleted: false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: String(blog.createdAt),
+      updated_at: String(blog.updatedAt),
     }));
 
     // Supabaseで記事をアップサート（挿入または更新）

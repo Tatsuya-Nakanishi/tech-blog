@@ -3,50 +3,6 @@ import { ArticleType } from "@/types/article";
 import { createClient } from "@/lib/supabase/client/serverClient";
 import { redirect } from "next/navigation";
 
-const likedArticles: ArticleType[] = [
-  {
-    id: 1,
-    title: "Next.jsでブログを作ろう！",
-    date: "2021.8.5",
-    tags: ["Next.js", "React", "Web開発"],
-    summary: "Next.jsを使ってブログを作成する方法を詳細に解説します。",
-    imageUrl: "https://future-architect.github.io/images/20240228a/top.jpg",
-  },
-  {
-    id: 2,
-    title: "TypeScriptの基本をマスターする",
-    date: "2021.8.10",
-    tags: ["TypeScript", "JavaScript"],
-    summary: "TypeScriptの基本的な使い方とその利点について解説します。",
-    imageUrl: "https://future-architect.github.io/images/20240228a/top.jpg",
-  },
-  {
-    id: 3,
-    title: "React Hooks徹底解説",
-    date: "2021.8.15",
-    tags: ["React", "Hooks"],
-    summary: "React Hooksを使いこなすためのガイドです。",
-    imageUrl: "https://future-architect.github.io/images/20240228a/top.jpg",
-  },
-  {
-    id: 4,
-    title: "フロントエンドテスト入門",
-    date: "2021.8.20",
-    tags: ["テスト", "Jest", "Cypress"],
-    summary: "フロントエンド開発におけるテストの重要性と基本を学びます。",
-    imageUrl: "https://future-architect.github.io/images/20240228a/top.jpg",
-  },
-  {
-    id: 5,
-    title: "Next.jsのSSRとSSGを理解する",
-    date: "2021.8.25",
-    tags: ["Next.js", "SSR", "SSG"],
-    summary:
-      "Next.jsのサーバーサイドレンダリングと静的サイト生成について詳しく説明します。",
-    imageUrl: "https://future-architect.github.io/images/20240228a/top.jpg",
-  },
-];
-
 export default async function Page() {
   const supabase = createClient();
   const { data } = await supabase.auth.getUser();
@@ -64,6 +20,52 @@ export default async function Page() {
   if (!user || userError) {
     redirect("/login");
   }
+  // いいねした記事を取得
+  const { data: likedArticlesData, error: likesError, count: likedArticleCount } = await supabase
+    .from("likes")
+    .select(`
+      article_id,
+      articles (
+        id,
+        title,
+        created_at,
+        content,
+        description,
+        image_url,
+        article_categories (
+          categories (
+            name
+          )
+        )
+      )
+    `, { count: 'exact' })
+    .eq("user_id", auth.id)
+    .order('created_at', { ascending: false })
+    .range(0, 4);
+  if (likesError) {
+    console.error("いいねした記事の取得エラー:", likesError);
+    // エラーハンドリングを適切に行う（例: エラーページにリダイレクトなど）
+  }
 
-  return <MyPage likedArticles={likedArticles} user={user} />;
+  const likedArticles: ArticleType[] = likedArticlesData
+     ? likedArticlesData
+      .filter((like): like is typeof like & { articles: NonNullable<typeof like['articles']> } => 
+        like.articles !== null && like.articles !== undefined
+      )
+      .map(like => ({
+        id: like.articles.id,
+        title: like.articles.title,
+        content: like.articles.content,
+        image_url: like.articles.image_url,
+        description: like.articles.description,
+        created_at: like.articles.created_at,
+        categories: like.articles.article_categories
+          .map(ac => ac.categories?.name)
+          .filter((name): name is string => name !== null && name !== undefined),
+      }))
+  : [];
+
+  const initialHasMore = likedArticleCount ? likedArticleCount > (1 * 5) : false;
+
+  return <MyPage likedArticles={likedArticles} user={user} initialHasMore={initialHasMore} />;
 }

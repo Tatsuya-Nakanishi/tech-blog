@@ -1,8 +1,9 @@
 export type ArticleType = {
-  id: number;
-  title: string;
-  date: string;
-  tags: string[];
-  summary: string;
-  imageUrl: string;
+    id: string;
+    title: string;
+    content: string;
+    image_url: string | null;
+    description: string | null;
+    created_at: string;
+    categories: (string | undefined)[];
 };
