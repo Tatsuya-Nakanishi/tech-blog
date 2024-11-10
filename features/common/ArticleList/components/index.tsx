@@ -60,6 +60,7 @@ export default function Component({ articles, heading, initialHasMore }: PropTyp
                     <Link
                       href={`/article/${article.id}`}
                       className="hover:text-purple-600"
+                      prefetch={true}
                     >
                       {article.title}
                     </Link>

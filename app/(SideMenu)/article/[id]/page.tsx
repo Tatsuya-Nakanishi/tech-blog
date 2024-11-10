@@ -53,23 +53,6 @@ export default async function Page({
 
   const initialLikes = articleData.likes[0].count;
 
-  // const initialComments: CommentType[] = [
-  //   {
-  //     id: 1,
-  //     author: "ユーザー1",
-  //     avatar: "/placeholder.svg",
-  //     date: "2023/05/01",
-  //     content: "とても参考になる記事です！",
-  //   },
-  //   {
-  //     id: 2,
-  //     author: "ユーザー2",
-  //     avatar: "/placeholder.svg",
-  //     date: "2023/05/02",
-  //     content: "Container/Presentational構成について理解が深まりました。",
-  //   },
-  // ];
-
   // コメントとユーザー情報を取得
   const { data: commentsData, error: commentsError } = await supabase
     .from('comments')

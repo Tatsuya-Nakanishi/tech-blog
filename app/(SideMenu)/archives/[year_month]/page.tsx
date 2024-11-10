@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/client/serverClient";
 import { ArticleType } from "@/types/article";
 import { notFound } from 'next/navigation';
 import { parse, isValid, startOfMonth, endOfMonth } from 'date-fns';
+import { ITEMS_PER_PAGE, INITIAL_RANGE_START, INITIAL_RANGE_END } from "@/constants/pagination";
 
 export default async function Page({
   params,
@@ -43,7 +44,7 @@ export default async function Page({
     .gte('created_at', startISO) // 開始日以上
     .lte('created_at', endISO)   // 終了日以下
     .order('created_at', { ascending: false }) // 作成日時で降順にソート
-    .range(0, 4); // 最新5件を取得
+    .range(INITIAL_RANGE_START, INITIAL_RANGE_END); // 最新5件を取得
 
   if (error) {
     throw ('記事取得エラー')
@@ -64,7 +65,7 @@ export default async function Page({
     }));
   }
 
-  const initialHasMore = count ? count > (1 * 5) : false;
+  const initialHasMore = count ? count > ITEMS_PER_PAGE : false;
 
   return <YearMonth articles={articles} heading={year_month} initialHasMore={initialHasMore} />;
 }

@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/client/browserClient";
 export const revalidate = 0;
 
 export async function GET(request: Request) {
-  console.log("liknage micro cms");
   const supabase = createClient();
   try {
     // 1. microCMSから記事を全件取得

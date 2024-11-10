@@ -2,6 +2,7 @@ import MyPage from "@/features/routes/identity/mypage/components/index";
 import { ArticleType } from "@/types/article";
 import { createClient } from "@/lib/supabase/client/serverClient";
 import { redirect } from "next/navigation";
+import {ITEMS_PER_PAGE, INITIAL_RANGE_START, INITIAL_RANGE_END} from "@/constants/pagination";
 
 export default async function Page() {
   const supabase = createClient();
@@ -41,7 +42,7 @@ export default async function Page() {
     `, { count: 'exact' })
     .eq("user_id", auth.id)
     .order('created_at', { ascending: false })
-    .range(0, 4);
+    .range(INITIAL_RANGE_START, INITIAL_RANGE_END);
   if (likesError) {
     console.error("いいねした記事の取得エラー:", likesError);
     // エラーハンドリングを適切に行う（例: エラーページにリダイレクトなど）
@@ -65,7 +66,7 @@ export default async function Page() {
       }))
   : [];
 
-  const initialHasMore = likedArticleCount ? likedArticleCount > (1 * 5) : false;
+  const initialHasMore = likedArticleCount ? likedArticleCount > ITEMS_PER_PAGE : false;
 
   return <MyPage likedArticles={likedArticles} user={user} initialHasMore={initialHasMore} />;
 }

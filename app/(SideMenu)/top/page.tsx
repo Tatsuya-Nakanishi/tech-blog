@@ -1,5 +1,6 @@
 import Top from "@/features/routes/top/components/index";
 import { createClient } from "@/lib/supabase/client/serverClient";
+import {ITEMS_PER_PAGE, INITIAL_RANGE_START, INITIAL_RANGE_END} from "@/constants/pagination";
 
 export default async function Page() {
   const supabase = createClient();
@@ -18,7 +19,7 @@ export default async function Page() {
       )
     `, { count: 'exact' })
     .order('created_at', { ascending: false }) // 作成日時で降順にソート
-    .range(0, 4);
+    .range(INITIAL_RANGE_START, INITIAL_RANGE_END);
 
   if (error) {
     throw ('記事取得エラー')
@@ -37,9 +38,9 @@ export default async function Page() {
       .filter(Boolean) // 未定義やnullを除外
   }));
 
-  const initialHasMore = count ? count > (1 * 5) : false;
-  console.log(count);
-  console.log(initialHasMore);
+  const initialHasMore = count ? count > ITEMS_PER_PAGE : false;
 
-  return <Top articles={articles} heading="最新の記事" initialHasMore={initialHasMore} />;
+  return (
+    <Top articles={articles} heading="最新の記事" initialHasMore={initialHasMore} />
+  );
 }

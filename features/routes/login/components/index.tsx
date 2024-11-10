@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
+import InputText from "@/components/common/InputText";
 import { Label } from "@/components/ui/label";
 import { useLogin } from "../hooks";
 import PrimaryButton from "@/components/common/PrimaryButton";
@@ -18,7 +18,7 @@ export default function Component() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="email">メールアドレス</Label>
-              <Input
+              <InputText
                 type="email"
                 id="email"
                 value={email}
@@ -29,7 +29,7 @@ export default function Component() {
             </div>
             <div>
               <Label htmlFor="password">パスワード</Label>
-              <Input
+              <InputText
                 type="password"
                 id="password"
                 value={password}

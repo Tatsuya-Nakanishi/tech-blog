@@ -1,6 +1,7 @@
 import CategoryName from "@/features/routes/category/category_name/components/index";
 import { createClient } from "@/lib/supabase/client/serverClient";
 import { ArticleType } from "@/types/article";
+import {ITEMS_PER_PAGE, INITIAL_RANGE_START, INITIAL_RANGE_END} from "@/constants/pagination";
 
 export const revalidate = 0;
 
@@ -31,7 +32,7 @@ export default async function Page({
   `, { count: 'exact' })
   .eq('article_categories.categories.name', decodeName)
   .order('created_at', { ascending: false })
-  .range(0, 4);
+  .range(INITIAL_RANGE_START, INITIAL_RANGE_END);
 
   if (error) {
     throw (error.message);
@@ -52,7 +53,7 @@ export default async function Page({
     }));
   }
 
-  const initialHasMore = count ? count > (1 * 5) : false;
+  const initialHasMore = count ? count > ITEMS_PER_PAGE : false;
 
   return <CategoryName articles={articles} heading={decodeName} initialHasMore={initialHasMore} />;
 }

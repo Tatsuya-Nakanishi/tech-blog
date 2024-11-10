@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import InputText from "@/components/common/InputText";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMyPage } from "../hooks";
@@ -48,51 +49,6 @@ export default function MyPage({
             <CardTitle>プロフィール</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* <div className="flex flex-col items-center space-y-4">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="relative">
-                      <Avatar className="w-24 h-24">
-                        <AvatarImage
-                          src={avatarPreview || ""}
-                          alt="ユーザーアイコン"
-                        />
-                        <AvatarFallback>UN</AvatarFallback>
-                      </Avatar>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        title=""
-                      />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>ファイルを選択する</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <div className="w-full max-w-sm space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nickname">ニックネーム</Label>
-                  <Input
-                    id="nickname"
-                    value={userData?.nickname || ""}
-                    onChange={(e) =>
-                      setUserData({ ...userData, nickname: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">メールアドレス</Label>
-                  <Input id="email" value={userData?.email || ''} disabled />
-                </div>
-                <PrimaryButton onClick={handleUpdate}>更新する</PrimaryButton>
-                {error &&<div className="text-red-500 text-sm text-center">{error}</div>}
-              </div>
-            </div> */}
             <form onSubmit={handleProfileUpdate} className="flex flex-col items-center space-y-4">
               <TooltipProvider>
                 <Tooltip>
@@ -110,7 +66,6 @@ export default function MyPage({
                         accept="image/*"
                         onChange={handleFileChange}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        title=""
                       />
                     </div>
                   </TooltipTrigger>
@@ -122,7 +77,7 @@ export default function MyPage({
               <div className="w-full max-w-sm space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="nickname">ニックネーム</Label>
-                  <Input
+                  <InputText
                     id="nickname"
                     value={userData?.nickname || ""}
                     onChange={(e) =>
@@ -132,7 +87,7 @@ export default function MyPage({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">メールアドレス</Label>
-                  <Input id="email" value={userData?.email || ''} disabled />
+                  <InputText id="email" value={userData?.email || ''} disabled />
                 </div>
                 <PrimaryButton type="submit">更新する</PrimaryButton>
                 {error && <div className="text-red-500 text-sm text-center">{error}</div>}

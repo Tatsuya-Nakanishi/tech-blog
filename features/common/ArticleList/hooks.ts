@@ -3,15 +3,17 @@
 import { useState } from "react";
 import { ArticleType } from "@/types/article";
 import { createClient } from "@/lib/supabase/client/browserClient";
+import { useLoading } from '@/contexts/LoadingContext';
+import { ITEMS_PER_PAGE } from "@/constants/pagination";
 
 export function useArticleList(initialArticles: ArticleType[], initialHasMore: boolean) {
   const [articleList, setArticleList] =
     useState<ArticleType[]>(initialArticles);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const { setIsLoading } = useLoading();
 
-  const loadMoreArticles = async (page: number, pageSize: number = 5) => {
+  const loadMoreArticles = async (page: number, pageSize: number = ITEMS_PER_PAGE) => {
     const supabase = createClient();
     const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
@@ -54,10 +56,8 @@ export function useArticleList(initialArticles: ArticleType[], initialHasMore: b
   };
 
   const handleLoadMore = async () => {
-    if (isLoading || !hasMore) return;
-
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const nextPage = page + 1;
       const { articles: newArticles, hasMore: newHasMore } = await loadMoreArticles(nextPage);
       setArticleList(prevArticles => [...prevArticles, ...newArticles]);
@@ -70,5 +70,5 @@ export function useArticleList(initialArticles: ArticleType[], initialHasMore: b
     }
   };
 
-  return { articleList, isLoading, hasMore, handleLoadMore };
+  return { articleList, hasMore, handleLoadMore };
 }

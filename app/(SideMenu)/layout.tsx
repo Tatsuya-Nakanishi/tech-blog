@@ -41,7 +41,7 @@ export default async function Layout({ children }: LayoutProps)  {
   return (
     <div className="min-h-screen flex flex-col">
       <main className="container mx-auto flex-grow p-4 md:flex md:space-x-4">
-          {children}
+        {children}
         <SideMenu categories={categories} archives={archives} />
       </main>
     </div>

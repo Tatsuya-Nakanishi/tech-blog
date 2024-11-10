@@ -3,24 +3,13 @@
 import React from "react";
 import { ClipLoader } from "react-spinners";
 
-const LoadingSpinner = () => {
-  // スピナーのサイズや色をカスタマイズできます
+const LoadingSpinner: React.FC = () => {
   const size = 50;
-  const color = "#123abc";
+  const color = "#ffffff"; // Changed to white for better visibility on semi-transparent background
 
   return (
-    <div className="spinner-container flex items-center justify-center min-h-screen">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <ClipLoader size={size} color={color} />
-
-      {/* スタイル */}
-      <style jsx>{`
-        .spinner-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-        }
-      `}</style>
     </div>
   );
 };

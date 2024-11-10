@@ -5,7 +5,7 @@ import { ArticleType } from "@/types/article";
 import { CommentType } from "@/types/comment";
 import { createClient } from "@/lib/supabase/client/browserClient";
 import { UserType } from "@/types/user";
-import { useRouter } from 'next/navigation';
+import { useLoading } from '@/contexts/LoadingContext';
 
 type TableOfContentsItem = {
   id: string;
@@ -19,8 +19,8 @@ export function useArticleDetail(
   user: UserType | null,
   isLiked: boolean,
 ) {
+  const { setIsLoading } = useLoading();
   const supabase = createClient();
-  const router = useRouter();
 
   const [likes, setLikes] = useState(initialLikes);
   const [isAlreadyLiked, setIsAlreadyLiked] = useState(isLiked);
@@ -38,6 +38,7 @@ export function useArticleDetail(
     }
 
      try {
+      setIsLoading(true);
       const { data: existingLike, error: fetchError } = await supabase
         .from('likes')
         .select()
@@ -79,12 +80,12 @@ export function useArticleDetail(
       }
     } catch (error) {
       console.error('Unexpected error:', error);
+    } finally {
+      setIsLoading(false);
     }
-    router.refresh();
   };
 
-  const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleCommentSubmit = async () => {
     if (!user) {
       setIsLoginModalOpen(true);
       return;
@@ -92,9 +93,11 @@ export function useArticleDetail(
 
     if (!newComment.trim()) {
       alert('コメントを入力してください。');
+      return;
     }
 
     try {
+        setIsLoading(true);
         const { data, error } = await supabase
           .from('comments')
           .insert({
@@ -120,9 +123,9 @@ export function useArticleDetail(
         setNewComment("");
       } catch (error) {
         console.error('コメントの送信エラー:', error);
-        // TODO: ユーザーにエラーを通知する処理を追加
+      } finally {
+        setIsLoading(false);
       }
-    router.refresh();
   };
 
   const handleCommentDelete = async (commentId: string) => {
@@ -132,6 +135,7 @@ export function useArticleDetail(
     }
 
     try {
+      setIsLoading(true);
       const { error } = await supabase
         .from('comments')
         .delete()
@@ -143,7 +147,8 @@ export function useArticleDetail(
       setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
     } catch (error) {
       console.error('コメントの削除エラー:', error);
-      // TODO: ユーザーにエラーを通知する処理を追加
+    } finally {
+      setIsLoading(false);
     }
   };
 

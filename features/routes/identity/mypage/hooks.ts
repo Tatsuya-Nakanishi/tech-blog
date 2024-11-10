@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { ArticleType } from "@/types/article";
 import { UserType } from "@/types/user";
 import { createClient } from "@/lib/supabase/client/browserClient";
+import { ITEMS_PER_PAGE } from "@/constants/pagination";
 
 export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], initialHasMore: boolean) {
   const supabase = createClient();
@@ -110,7 +111,7 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], i
     }
   };
 
-  const loadMoreLikedArticles = async (page: number, pageSize: number = 5) => {
+  const loadMoreLikedArticles = async (page: number, pageSize: number = ITEMS_PER_PAGE) => {
     const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
 

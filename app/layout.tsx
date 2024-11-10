@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Header from "@/features/common/Header/components/index";
-import { Suspense } from "react";
-import Loading from "./loading";
 import { createClient } from "@/lib/supabase/client/serverClient";
 import { UserType } from "@/types/user";
 import "./globals.css";
+import { LoadingProvider } from "@/contexts/LoadingContext";
+import GlobalLoading from "@/components/common/GlobalLoading";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -48,19 +48,22 @@ export default async function RootLayout({
   }
   
   return (
-    <html lang="en">
+    <html lang="ja" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <Suspense fallback={<Loading />}>
+        <LoadingProvider>
+          <GlobalLoading />
           <Header user={user} />
-          {children}
-        </Suspense>
-        <footer className="bg-purple-800 text-white p-4 mt-8">
-          <div className="container mx-auto text-center">
-            <p> © 2024 TATSULOG. All rights reserved.</p>
-          </div>
-        </footer>
+          <main className="flex-grow">
+            {children}
+          </main>
+          <footer className="bg-purple-800 text-white p-4 mt-8">
+            <div className="container mx-auto text-center">
+              <p>© 2024 TATSULOG. All rights reserved.</p>
+            </div>
+          </footer>
+        </LoadingProvider>
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
+import InputText from "@/components/common/InputText";
 import { Label } from "@/components/ui/label";
 import { useSignup } from "../hooks";
 import PrimaryButton from "@/components/common/PrimaryButton";
@@ -17,37 +17,26 @@ export default function Component() {
           <h1 className="text-2xl font-bold mb-6 text-center">サインアップ</h1>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
-              {/* <div>
-                <Label htmlFor="nickname">ニックネーム</Label>
-                <Input
-                  id="nickname"
-                  name="nickname"
-                  type="text"
-                  required
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                />
-              </div> */}
               <div>
                 <Label htmlFor="email">メールアドレス</Label>
-                <Input
+                <InputText
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  required
+                  required={true}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div>
                 <Label htmlFor="password">パスワード</Label>
-                <Input
+                <InputText
                   id="password"
                   name="password"
                   type="password"
                   autoComplete="new-password"
-                  required
+                  required={true}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />

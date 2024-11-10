@@ -1,7 +1,7 @@
 "use client";
 
 import { Heart, Trash2 } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
+import Textarea from "@/components/common/Textarea";
 import Avatar from "@/components/common/Avatar";
 import { useArticleDetail } from "../hooks";
 import { ArticleType } from "@/types/article";
@@ -47,7 +47,6 @@ export default function Component({
     setIsLoginModalOpen,
     isAlreadyLiked
   } = useArticleDetail(initialLikes, initialComments, article, user, isLiked);
-  console.log(comments);
   return (
     <div className="md:w-2/3 md:pr-8">
       <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
@@ -126,17 +125,19 @@ export default function Component({
             <p>{comment.content}</p>
           </div>
         ))}
-        <form onSubmit={handleCommentSubmit} className="mt-6">
           <Textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="コメントを入力してください"
             className="mb-2"
           />
-          <PrimaryButton width="w-60" type="submit">
+          <PrimaryButton 
+            width="w-60" 
+            type="button"
+            onClick={() =>  handleCommentSubmit()}
+          >
             コメントを投稿
           </PrimaryButton>
-        </form>
       </div>
       <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
         <DialogContent className="bg-white p-6 max-w-sm mx-auto">
