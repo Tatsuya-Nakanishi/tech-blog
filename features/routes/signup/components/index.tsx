@@ -3,19 +3,23 @@
 import Link from "next/link";
 import InputText from "@/components/common/InputText";
 import { Label } from "@/components/ui/label";
-import { useSignup } from "../hooks";
+import { signupAction } from "../actions/signup";
+import { useFormState } from 'react-dom';
 import PrimaryButton from "@/components/common/PrimaryButton";
 
+const initialState = {
+  error: '',
+};
+
 export default function Component() {
-  const { email, setEmail, password, setPassword, error, handleSubmit } =
-    useSignup();
+  const [state, formAction] = useFormState(signupAction, initialState);
 
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white p-8 border border-gray-300 rounded-lg shadow-lg">
           <h1 className="text-2xl font-bold mb-6 text-center">サインアップ</h1>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <form className="mt-8 space-y-6" action={formAction}>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="email">メールアドレス</Label>
@@ -25,8 +29,6 @@ export default function Component() {
                   type="email"
                   autoComplete="email"
                   required={true}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div>
@@ -37,16 +39,12 @@ export default function Component() {
                   type="password"
                   autoComplete="new-password"
                   required={true}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
             </div>
-
-            {error && (
-              <div className="text-red-500 text-sm text-center">{error}</div>
+            {state && state.error && (
+              <div className="text-red-500 text-sm text-center">{state.error}</div>
             )}
-
             <div>
               <PrimaryButton type="submit">サインアップ</PrimaryButton>
             </div>

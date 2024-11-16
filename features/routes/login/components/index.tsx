@@ -1,28 +1,30 @@
 "use client";
 
-import Link from "next/link";
 import InputText from "@/components/common/InputText";
 import { Label } from "@/components/ui/label";
-import { useLogin } from "../hooks";
+import { loginAction } from "../actions/login";
+import { useFormState } from 'react-dom';
 import PrimaryButton from "@/components/common/PrimaryButton";
 
+const initialState = {
+  error: '',
+};
+
 export default function Component() {
-  const { email, password, error, setEmail, setPassword, handleSubmit } =
-    useLogin();
+  const [state, formAction] = useFormState(loginAction, initialState);
 
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white p-8 border border-gray-300 rounded-lg shadow-lg">
           <h1 className="text-2xl font-bold mb-6 text-center">ログイン</h1>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form action={formAction} className="space-y-4">
             <div>
               <Label htmlFor="email">メールアドレス</Label>
               <InputText
                 type="email"
                 id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
                 required
                 className="w-full"
               />
@@ -32,25 +34,16 @@ export default function Component() {
               <InputText
                 type="password"
                 id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
                 required
                 className="w-full"
               />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {state && state.error && <p className="text-red-500 text-sm">{state.error}</p>}
             <PrimaryButton type="submit" className="w-full bg-purple-600">
               ログイン
             </PrimaryButton>
           </form>
-          <div className="mt-3 text-center">
-            <Link
-              href="/reset_password/send_email"
-              className="text-sm text-purple-600 hover:underline"
-            >
-              パスワードを忘れた方はこちら
-            </Link>
-          </div>
         </div>
       </main>
     </div>
