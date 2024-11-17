@@ -9,7 +9,7 @@ type LayoutProps = {
 };
 
 export default async function Layout({ children }: LayoutProps)  {
-  const supabase = createClient();
+  const supabase = await createClient();
   
   const { data: categories, error: categoryNamesError } = await supabase
     .from('categories')

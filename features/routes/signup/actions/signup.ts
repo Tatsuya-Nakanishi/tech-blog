@@ -10,7 +10,7 @@ const signupSchema = z.object({
 });
 
 export async function signupAction(prevState: any, formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   let redirectTo = '';
 
   const validatedFields = signupSchema.safeParse({

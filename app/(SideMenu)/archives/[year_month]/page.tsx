@@ -10,7 +10,7 @@ export default async function Page({
 }: {
   params: { year_month: string };
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { year_month } = params;
   console.log(year_month);
   // year_month が 'YYYY-MM' 形式であることを確認

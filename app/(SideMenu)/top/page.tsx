@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/client/serverClient";
 import {ITEMS_PER_PAGE, INITIAL_RANGE_START, INITIAL_RANGE_END} from "@/constants/pagination";
 
 export default async function Page() {
-  const supabase = createClient();
+  const supabase = await createClient();
   // articles と関連する article_categories と categories を取得
   const { data, error, count } = await supabase
     .from('articles')

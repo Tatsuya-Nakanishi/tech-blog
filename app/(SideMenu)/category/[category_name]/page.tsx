@@ -10,7 +10,7 @@ export default async function Page({
 }: {
   params: { category_name: string };
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { category_name } = params;
   const decodeName = decodeURIComponent(category_name);
 

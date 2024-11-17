@@ -4,7 +4,7 @@ import Link from "next/link";
 import InputText from "@/components/common/InputText";
 import { Label } from "@/components/ui/label";
 import { signupAction } from "../actions/signup";
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import PrimaryButton from "@/components/common/PrimaryButton";
 
 const initialState = {
@@ -12,7 +12,7 @@ const initialState = {
 };
 
 export default function Component() {
-  const [state, formAction] = useFormState(signupAction, initialState);
+  const [state, formAction,] = useActionState(signupAction, initialState);
 
   return (
     <div className="min-h-screen flex flex-col">

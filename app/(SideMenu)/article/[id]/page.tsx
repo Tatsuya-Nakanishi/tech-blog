@@ -10,7 +10,7 @@ export default async function Page({
 }: {
   params: { id: string };
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { id } = params;
    const { data: articleData, error} = await supabase
   .from('articles')

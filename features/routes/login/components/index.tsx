@@ -3,7 +3,7 @@
 import InputText from "@/components/common/InputText";
 import { Label } from "@/components/ui/label";
 import { loginAction } from "../actions/login";
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import PrimaryButton from "@/components/common/PrimaryButton";
 
 const initialState = {
@@ -11,7 +11,7 @@ const initialState = {
 };
 
 export default function Component() {
-  const [state, formAction] = useFormState(loginAction, initialState);
+  const [state, formAction,] = useActionState(loginAction, initialState);
 
   return (
     <div className="min-h-screen flex flex-col">

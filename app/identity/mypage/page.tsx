@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import {ITEMS_PER_PAGE, INITIAL_RANGE_START, INITIAL_RANGE_END} from "@/constants/pagination";
 
 export default async function Page() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   const auth = data?.user;
   if (!auth) {
