@@ -2,10 +2,9 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Component from './index';
-import '@testing-library/jest-dom';
 
 jest.mock('react', () => {
-  const actualReact = jest.requireActual('react') as typeof React;
+  const actualReact = jest.requireActual('react');
   return {
     ...actualReact,
     useActionState: jest.fn(),
