@@ -17,6 +17,8 @@ const config = {
   },
   // jestがテストを実行する前に読み込むセットアップファイルを指定
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  // jestに無視してほしいパスを指定
+  testPathIgnorePatterns: ["/e2e/", "/tests-examples/"],
 };
 
 // 作成したJestのカスタム設定をエクスポートする

@@ -25,7 +25,6 @@ export default function Component() {
                 type="email"
                 id="email"
                 name="email"
-                required
                 className="w-full"
               />
             </div>
@@ -35,7 +34,6 @@ export default function Component() {
                 type="password"
                 id="password"
                 name="password"
-                required
                 className="w-full"
               />
             </div>
