@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createClient } from "@/lib/supabase/client/testClient";
+import { createClient } from '@/lib/supabase/client/testClient';
 
 const testEmail = 'test@example.com';
 const testPassword = 'testpassword123';
@@ -14,7 +14,7 @@ test.beforeAll(async () => {
   });
 
   if (error) {
-    if (error.message.includes("already registered")) {
+    if (error.message.includes('already registered')) {
       // supabaseの仕様でテストユーザーが既に存在していたらエラーが返ってくるため正常
       console.error('テストユーザーが既に存在しています。');
       return;
@@ -26,7 +26,6 @@ test.beforeAll(async () => {
 });
 
 test.describe('ログインテスト', () => {
-
   test('正常なログイン', async ({ page }) => {
     await page.goto('/login');
 
@@ -41,8 +40,8 @@ test.describe('ログインテスト', () => {
     await expect(page).toHaveURL('/top');
 
     // ヘッダーの表示を確認
-    await expect(page.getByText("マイページ")).toBeInViewport();
-    await expect(page.getByText("ログアウト")).toBeInViewport();
+    await expect(page.getByText('マイページ')).toBeInViewport();
+    await expect(page.getByText('ログアウト')).toBeInViewport();
   });
 
   test('無効なログイン', async ({ page }) => {
@@ -56,7 +55,9 @@ test.describe('ログインテスト', () => {
     await page.click('button[type="submit"]');
 
     // エラーメッセージを確認
-    await expect(page.locator('text=ログインに失敗しました。再度お試しください。')).toBeVisible();
+    await expect(
+      page.locator('text=ログインに失敗しました。再度お試しください。')
+    ).toBeVisible();
   });
 
   test('入力バリデーション', async ({ page }) => {
@@ -66,6 +67,8 @@ test.describe('ログインテスト', () => {
     await page.click('button[type="submit"]');
 
     // バリデーションエラーメッセージを確認
-    await expect(page.locator('text=メールアドレスとパスワードを正しく入力してください。')).toBeVisible();
+    await expect(
+      page.locator('text=メールアドレスとパスワードを正しく入力してください。')
+    ).toBeVisible();
   });
 });
