@@ -1,9 +1,9 @@
-import type { BlogListResponse } from "@/types/microcmsBlog";
-import { fetchBlogs } from "@/lib/microcms/actions/getBlogs";
-import { createClient } from "@/lib/supabase/client/browserClient";
+import type { BlogListResponse } from '@/types/microcmsBlog';
+import { fetchBlogs } from '@/lib/microcms/actions/getBlogs';
+import { createClient } from '@/lib/supabase/client/browserClient';
 export const revalidate = 0;
 
-export async function GET(request: Request) {
+export async function GET() {
   const supabase = createClient();
   try {
     // 1. microCMSから記事を全件取得
@@ -27,21 +27,21 @@ export async function GET(request: Request) {
     // カテゴリをアップサート（挿入のみ）
     // 既存の名前がない場合のみ挿入するために、insert with ignoreDuplicates
     const { error: categoriesError } = await supabase
-      .from("categories")
-      .upsert(categories, { onConflict: "name", ignoreDuplicates: true });
+      .from('categories')
+      .upsert(categories, { onConflict: 'name', ignoreDuplicates: true });
 
     if (categoriesError) {
-      console.error("カテゴリのアップサートエラー:", categoriesError);
+      console.error('カテゴリのアップサートエラー:', categoriesError);
       throw categoriesError;
     }
 
     // カテゴリーを取得
     const { data: categoriesData, error: fetchCategoriesError } = await supabase
-      .from("categories")
-      .select("id, name");
+      .from('categories')
+      .select('id, name');
 
     if (fetchCategoriesError) {
-      console.error("カテゴリの取得エラー:", fetchCategoriesError);
+      console.error('カテゴリの取得エラー:', fetchCategoriesError);
       throw fetchCategoriesError;
     }
 
@@ -65,21 +65,22 @@ export async function GET(request: Request) {
 
     // Supabaseで記事をアップサート（挿入または更新）
     const { error: articlesError } = await supabase
-      .from("articles")
-      .upsert(articles, { onConflict: "micro_cms_id" });
+      .from('articles')
+      .upsert(articles, { onConflict: 'micro_cms_id' });
 
     if (articlesError) {
-      console.error("記事のアップサートエラー:", articlesError);
+      console.error('記事のアップサートエラー:', articlesError);
       throw articlesError;
     }
 
     // 6. article_categoriesの処理
     // まず、記事のIDを取得
-    const { data: articlesDataFetched, error: fetchArticlesError } =
-      await supabase.from("articles").select("id, micro_cms_id");
+    const { data: articlesDataFetched, error: fetchArticlesError } = await supabase
+      .from('articles')
+      .select('id, micro_cms_id');
 
     if (fetchArticlesError) {
-      console.error("記事の取得エラー:", fetchArticlesError);
+      console.error('記事の取得エラー:', fetchArticlesError);
       throw fetchArticlesError;
     }
 
@@ -106,9 +107,7 @@ export async function GET(request: Request) {
               created_at: new Date().toISOString(),
             });
           } else {
-            console.warn(
-              `Category name "${cat.name}" not found in categories table.`
-            );
+            console.warn(`Category name "${cat.name}" not found in categories table.`);
           }
         });
       }
@@ -116,11 +115,9 @@ export async function GET(request: Request) {
 
     // 重複を避けるために一意にする
     const uniqueArticleCategories = Array.from(
-      new Set(
-        articleCategories.map((ac) => `${ac.article_id}_${ac.category_id}`)
-      )
+      new Set(articleCategories.map((ac) => `${ac.article_id}_${ac.category_id}`))
     ).map((uniqueKey) => {
-      const [article_id, category_id] = uniqueKey.split("_");
+      const [article_id, category_id] = uniqueKey.split('_');
       return {
         article_id,
         category_id,
@@ -130,51 +127,44 @@ export async function GET(request: Request) {
 
     // Supabaseでarticle_categoriesをアップサート（挿入のみ）
     const { error: articleCategoriesError } = await supabase
-      .from("article_categories")
+      .from('article_categories')
       .upsert(uniqueArticleCategories, {
-        onConflict: "article_id,category_id", // 文字列形式に変更
+        onConflict: 'article_id,category_id', // 文字列形式に変更
       });
 
     if (articleCategoriesError) {
-      console.error(
-        "article_categoriesのアップサートエラー:",
-        articleCategoriesError
-      );
+      console.error('article_categoriesのアップサートエラー:', articleCategoriesError);
       throw articleCategoriesError;
     }
 
     // 6. 論理削除: microCMSから取得した記事に存在しない記事を削除フラグを立てる
     const microCMSIds = fetchedBlogs.map((blog) => blog.id);
     const { error: softDeleteError } = await supabase
-      .from("articles")
+      .from('articles')
       .update({ is_deleted: true })
-      .not(
-        "micro_cms_id",
-        "in",
-        `(${microCMSIds.map((id) => `${id}`).join(",")})`
-      )
-      .neq("is_deleted", true); // 既に削除されていないものだけ更新
+      .not('micro_cms_id', 'in', `(${microCMSIds.map((id) => `${id}`).join(',')})`)
+      .neq('is_deleted', true); // 既に削除されていないものだけ更新
 
     if (softDeleteError) {
-      console.error("論理削除エラー:", softDeleteError);
+      console.error('論理削除エラー:', softDeleteError);
       throw softDeleteError;
     }
 
     // 更新: micro_cms_id が microCMSIds に含まれるレコードの is_deleted を false に設定
     const { error: unsoftDeleteError } = await supabase
-      .from("articles")
+      .from('articles')
       .update({ is_deleted: false })
-      .in("micro_cms_id", microCMSIds)
-      .neq("is_deleted", false); // 既に false でないものだけ更新
+      .in('micro_cms_id', microCMSIds)
+      .neq('is_deleted', false); // 既に false でないものだけ更新
 
     if (unsoftDeleteError) {
-      console.error("論理削除解除エラー:", unsoftDeleteError);
+      console.error('論理削除解除エラー:', unsoftDeleteError);
       throw unsoftDeleteError;
     }
 
-    return new Response("Sync completed successfully", { status: 200 });
+    return new Response('Sync completed successfully', { status: 200 });
   } catch (error) {
-    console.error("Sync error:", error);
-    return new Response("Sync failed", { status: 500 });
+    console.error('Sync error:', error);
+    return new Response('Sync failed', { status: 500 });
   }
 }
