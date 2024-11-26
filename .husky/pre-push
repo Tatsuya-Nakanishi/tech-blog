@@ -1,1 +1,5 @@
+# 型チェック
 npm run check-types
+
+# Jestでテスト実行
+npm run test
