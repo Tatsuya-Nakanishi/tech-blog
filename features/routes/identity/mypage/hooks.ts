@@ -1,16 +1,19 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useRef } from "react";
-import { ArticleType } from "@/types/article";
-import { UserType } from "@/types/user";
-import { createClient } from "@/lib/supabase/client/browserClient";
-import { ITEMS_PER_PAGE } from "@/constants/pagination";
+import { useState, useCallback } from 'react';
+import { ArticleType } from '@/types/article';
+import { UserType } from '@/types/user';
+import { createClient } from '@/lib/supabase/client/browserClient';
+import { ITEMS_PER_PAGE } from '@/constants/pagination';
 
-export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], initialHasMore: boolean) {
+export function useMyPage(
+  user: UserType,
+  initialLikedArticles: ArticleType[],
+  initialHasMore: boolean
+) {
   const supabase = createClient();
   const [userData, setUserData] = useState<UserType>(user);
-  const [likedArticles, setLikedArticles] =
-    useState<ArticleType[]>(initialLikedArticles);
+  const [likedArticles, setLikedArticles] = useState<ArticleType[]>(initialLikedArticles);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
@@ -20,20 +23,17 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], i
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        setAvatarFile(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setAvatarPreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    []
-  );
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
 
   const handleProfileUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     setError(null);
@@ -41,7 +41,7 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], i
 
     try {
       let avatar_url = userData.avatar_url;
-      let old_avatar_path: string | null = userData.avatar_url || null;
+      const old_avatar_path: string | null = userData.avatar_url || null;
 
       // 新しいアバター画像が選択されている場合、Supabase Storage にアップロード
       if (avatarFile) {
@@ -50,8 +50,7 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], i
         const filePath = `${userData.id}/${fileName}`;
 
         // 画像をアップロード
-        const { error: avatarUpdateError } = await supabase
-          .storage
+        const { error: avatarUpdateError } = await supabase.storage
           .from('user_avatars') // バケット名を 'user_avatars' に設定
           .upload(filePath, avatarFile, {
             upsert: true, // 既存のファイルがあれば上書き
@@ -63,18 +62,17 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], i
         }
 
         // パブリックURLを取得（バケットが公開設定の場合）
-        const { data: publicURL} = supabase
-          .storage
+        const { data: publicURL } = supabase.storage
           .from('user_avatars')
           .getPublicUrl(filePath);
 
         if (!publicURL) {
-          throw ('画像URLを取得できませんでした');
+          throw '画像URLを取得できませんでした';
         }
 
         avatar_url = publicURL.publicUrl;
         setAvatarPreview(avatar_url);
-        setUserData({ ...userData, avatar_url: avatar_url })
+        setUserData({ ...userData, avatar_url: avatar_url });
       }
 
       // users テーブルの nickname, avatar_url, avatar_path を更新
@@ -92,32 +90,40 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], i
       }
 
       // 古いアバター画像を削除（デフォルト画像でない場合）
-      if (old_avatar_path && old_avatar_path !== "default_avatar.png") { // デフォルト画像のパスを適宜変更
-        const { error: deleteError } = await supabase
-          .storage
+      if (old_avatar_path && old_avatar_path !== 'default_avatar.png') {
+        // デフォルト画像のパスを適宜変更
+        const { error: deleteError } = await supabase.storage
           .from('user_avatars')
           .remove([old_avatar_path]);
 
         if (deleteError) {
-          console.error("古いアバター画像の削除に失敗しました:", deleteError);
+          console.error('古いアバター画像の削除に失敗しました:', deleteError);
           // 必要に応じてエラーハンドリングを追加
         }
       }
       window.location.reload();
-    } catch (err: any) {
-      console.error("ユーザー情報の更新中にエラーが発生しました:", err);
-      setError(err.message || "予期せぬエラーが発生しました。");
+    } catch (err) {
+      console.error('ユーザー情報の更新中にエラーが発生しました:', err);
+      setError('予期せぬエラーが発生しました。');
     } finally {
     }
   };
 
-  const loadMoreLikedArticles = async (page: number, pageSize: number = ITEMS_PER_PAGE) => {
+  const loadMoreLikedArticles = async (
+    page: number,
+    pageSize: number = ITEMS_PER_PAGE
+  ) => {
     const start = (page - 1) * pageSize;
     const end = start + pageSize - 1;
 
-    const { data: likedArticlesData, error: likesError, count: likedArticleCount} = await supabase
-    .from("likes")
-    .select(`
+    const {
+      data: likedArticlesData,
+      error: likesError,
+      count: likedArticleCount,
+    } = await supabase
+      .from('likes')
+      .select(
+        `
       article_id,
       articles (
         id,
@@ -132,35 +138,41 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], i
           )
         )
       )
-    `, { count: 'exact' })
-    .eq("user_id", user.id)
-    .order('created_at', { ascending: false })
-    .range(start, end);
-
-  if (likesError) {
-    console.error("いいねした記事の取得エラー:", likesError);
-    // エラーハンドリングを適切に行う（例: エラーページにリダイレクトなど）
-  }
-
-  const likedArticles: ArticleType[] = likedArticlesData
-     ? likedArticlesData
-      .filter((like): like is typeof like & { articles: NonNullable<typeof like['articles']> } => 
-        like.articles !== null && like.articles !== undefined
+    `,
+        { count: 'exact' }
       )
-      .map(like => ({
-        id: like.articles.id,
-        title: like.articles.title,
-        content: like.articles.content,
-        image_url: like.articles.image_url,
-        description: like.articles.description,
-        created_at: like.articles.created_at,
-        categories: like.articles.article_categories
-          .map(ac => ac.categories?.name)
-          .filter((name): name is string => name !== null && name !== undefined),
-      }))
-  : [];
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .range(start, end);
 
-    const hasMore = likedArticleCount ? likedArticleCount > ((page + 1) * pageSize) : false;
+    if (likesError) {
+      console.error('いいねした記事の取得エラー:', likesError);
+      // エラーハンドリングを適切に行う（例: エラーページにリダイレクトなど）
+    }
+
+    const likedArticles: ArticleType[] = likedArticlesData
+      ? likedArticlesData
+          .filter(
+            (
+              like
+            ): like is typeof like & {
+              articles: NonNullable<(typeof like)['articles']>;
+            } => like.articles !== null && like.articles !== undefined
+          )
+          .map((like) => ({
+            id: like.articles.id,
+            title: like.articles.title,
+            content: like.articles.content,
+            image_url: like.articles.image_url,
+            description: like.articles.description,
+            created_at: like.articles.created_at,
+            categories: like.articles.article_categories
+              .map((ac) => ac.categories?.name)
+              .filter((name): name is string => name !== null && name !== undefined),
+          }))
+      : [];
+
+    const hasMore = likedArticleCount ? likedArticleCount > (page + 1) * pageSize : false;
 
     return { articles: likedArticles, hasMore };
   };
@@ -170,12 +182,13 @@ export function useMyPage(user: UserType, initialLikedArticles: ArticleType[], i
     setIsLoading(true);
     try {
       const nextPage = page + 1;
-      const { articles: newArticles, hasMore: newHasMore } = await loadMoreLikedArticles(nextPage);
-      setLikedArticles(prevArticles => [...prevArticles, ...newArticles]);
+      const { articles: newArticles, hasMore: newHasMore } =
+        await loadMoreLikedArticles(nextPage);
+      setLikedArticles((prevArticles) => [...prevArticles, ...newArticles]);
       setHasMore(newHasMore);
       setPage(nextPage);
     } catch (error) {
-      console.error("記事の読み込みに失敗しました:", error);
+      console.error('記事の読み込みに失敗しました:', error);
     } finally {
       setIsLoading(false);
     }

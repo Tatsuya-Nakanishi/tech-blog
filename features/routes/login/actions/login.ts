@@ -1,15 +1,19 @@
 'use server';
 
-import { createClient } from "@/lib/supabase/client/serverClient";
+import { createClient } from '@/lib/supabase/client/serverClient';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-  email: z.string().email("有効なメールアドレスを入力してください。"),
-  password: z.string().min(1, "パスワードを入力してください。"),
+  email: z.string().email('有効なメールアドレスを入力してください。'),
+  password: z.string().min(1, 'パスワードを入力してください。'),
 });
 
-export async function loginAction(prevState: any, formData: FormData) {
+type loginState = {
+  error?: string;
+};
+
+export async function loginAction(prevState: loginState, formData: FormData) {
   const supabase = await createClient();
   let redirectTo = '';
 
@@ -19,7 +23,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    return { error: "メールアドレスとパスワードを正しく入力してください。" };
+    return { error: 'メールアドレスとパスワードを正しく入力してください。' };
   }
 
   const { email, password } = validatedFields.data;
@@ -31,12 +35,13 @@ export async function loginAction(prevState: any, formData: FormData) {
     });
 
     if (loginError) {
-      return { error: "ログインに失敗しました。再度お試しください。" };
+      return { error: 'ログインに失敗しました。再度お試しください。' };
     }
 
     redirectTo = '/top';
   } catch (err) {
-    return { error: "ログインに失敗しました。再度お試しください。" };
+    console.log(err);
+    return { error: 'ログインに失敗しました。再度お試しください。' };
   }
 
   if (redirectTo) {

@@ -1,15 +1,19 @@
 'use server';
 
-import { createClient } from "@/lib/supabase/client/serverClient";
+import { createClient } from '@/lib/supabase/client/serverClient';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 const signupSchema = z.object({
-  email: z.string().email("有効なメールアドレスを入力してください。"),
-  password: z.string().min(8, "パスワードは8文字以上である必要があります。"),
+  email: z.string().email('有効なメールアドレスを入力してください。'),
+  password: z.string().min(8, 'パスワードは8文字以上である必要があります。'),
 });
 
-export async function signupAction(prevState: any, formData: FormData) {
+type LoginState = {
+  error?: string;
+};
+
+export async function signupAction(prevState: LoginState, formData: FormData) {
   const supabase = await createClient();
   let redirectTo = '';
 
@@ -19,7 +23,7 @@ export async function signupAction(prevState: any, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    return { error: "入力内容に誤りがあります。すべての項目を正しく入力してください。"};
+    return { error: '入力内容に誤りがあります。すべての項目を正しく入力してください。' };
   }
 
   const { email, password } = validatedFields.data;
@@ -31,12 +35,13 @@ export async function signupAction(prevState: any, formData: FormData) {
     });
 
     if (error) {
-      return { error: "サインアップに失敗しました。再度お試しください。"};
+      return { error: 'サインアップに失敗しました。再度お試しください。' };
     }
 
     redirectTo = '/top';
   } catch (err) {
-    return { error: "サインアップに失敗しました。再度お試しください。"};
+    console.log(err);
+    return { error: 'サインアップに失敗しました。再度お試しください。' };
   }
 
   if (redirectTo) {

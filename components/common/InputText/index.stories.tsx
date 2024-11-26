@@ -1,4 +1,3 @@
-import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import InputText from './index';
 
@@ -8,9 +7,20 @@ const meta: Meta<typeof InputText> = {
   tags: ['autodocs'],
   argTypes: {
     name: { control: 'text' },
-    type: { 
-      control: 'select', 
-      options: ['text', 'password', 'email', 'number', 'tel', 'url', 'search', 'date', 'time', 'datetime-local']
+    type: {
+      control: 'select',
+      options: [
+        'text',
+        'password',
+        'email',
+        'number',
+        'tel',
+        'url',
+        'search',
+        'date',
+        'time',
+        'datetime-local',
+      ],
     },
     required: { control: 'boolean' },
     value: { control: 'text' },

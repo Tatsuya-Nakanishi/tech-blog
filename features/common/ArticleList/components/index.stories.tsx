@@ -1,9 +1,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import ArticleList from './index';
-import { UserType } from '@/types/user';
 import { ArticleType } from '@/types/article';
-
 
 const meta: Meta<typeof ArticleList> = {
   title: 'Features/Common/ArticleList',
@@ -46,17 +44,17 @@ const mockArticles: ArticleType[] = [
 ];
 
 export const HasMorePage: Story = {
-    args: {
+  args: {
     articles: mockArticles,
     heading: '最新の記事',
     initialHasMore: true,
   },
-}
+};
 
 export const NotHasMorePage: Story = {
-    args: {
+  args: {
     articles: mockArticles,
     heading: '最新の記事',
     initialHasMore: false,
   },
-}
+};
