@@ -1,8 +1,8 @@
-import { loadEnvConfig } from '@next/env'
+import { loadEnvConfig } from '@next/env';
 
 const setupTestEnv = async (): Promise<void> => {
-  const projectDir = process.cwd()
-  loadEnvConfig(projectDir)
-}
+  const projectDir = process.cwd();
+  loadEnvConfig(projectDir);
+};
 
-export default setupTestEnv
+export default setupTestEnv;

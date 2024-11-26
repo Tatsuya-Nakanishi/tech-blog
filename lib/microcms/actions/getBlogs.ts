@@ -1,6 +1,6 @@
-import { client } from "@/lib/microcms/client/client";
-import type { Blog, BlogListResponse } from "@/types/microcmsBlog";
-import type { MicroCMSQueries } from "microcms-js-sdk";
+import { client } from '@/lib/microcms/client/client';
+import type { Blog, BlogListResponse } from '@/types/microcmsBlog';
+import type { MicroCMSQueries } from 'microcms-js-sdk';
 
 /**
  * ブログ一覧を取得する関数
@@ -12,12 +12,12 @@ export const fetchBlogs = async (
 ): Promise<BlogListResponse> => {
   try {
     const data = await client.getList<Blog>({
-      endpoint: "blogs",
+      endpoint: 'blogs',
       queries: queries,
     });
     return data;
   } catch (error) {
-    console.error("ブログ一覧の取得エラー:", error);
+    console.error('ブログ一覧の取得エラー:', error);
     throw error;
   }
 };

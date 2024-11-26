@@ -10,7 +10,7 @@ import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 dotenv.config({ path: path.resolve(__dirname, '.env.test.local') });
 
-const PORT = "3333";
+const PORT = '3333';
 
 const baseURL = `http://localhost:${PORT}`;
 /**

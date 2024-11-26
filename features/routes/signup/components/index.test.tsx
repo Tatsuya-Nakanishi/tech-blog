@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, screen} from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Component from './index';
 import mockRouter from 'next-router-mock';
@@ -18,7 +18,7 @@ jest.mock('../actions/signup', () => ({
   signupAction: jest.fn(),
 }));
 
-jest.mock("next/link", () => {
+jest.mock('next/link', () => {
   const mockLink = ({
     children,
     href,
@@ -41,24 +41,22 @@ jest.mock("next/link", () => {
       </a>
     );
   };
-  mockLink.displayName = "Link";
+  mockLink.displayName = 'Link';
   return mockLink;
 });
 
-const mockUseActionState = React.useActionState as jest.MockedFunction<typeof React.useActionState>;
+const mockUseActionState = React.useActionState as jest.MockedFunction<
+  typeof React.useActionState
+>;
 
 describe('Signup Component', () => {
   beforeEach(() => {
-    mockUseActionState.mockReturnValue([
-      { error: '' },
-      jest.fn(),
-      false
-    ]);
+    mockUseActionState.mockReturnValue([{ error: '' }, jest.fn(), false]);
   });
 
   it('サインアップコンポーネントが正しく表示される', () => {
     render(<Component />);
-    
+
     expect(screen.getByRole('heading', { name: 'サインアップ' })).toBeInTheDocument();
     expect(screen.getByLabelText('メールアドレス')).toBeInTheDocument();
     expect(screen.getByLabelText('パスワード')).toBeInTheDocument();
@@ -69,11 +67,7 @@ describe('Signup Component', () => {
 
   it('サインアップ失敗時のエラーメッセージを表示', () => {
     const errorMessage = 'サインアップに失敗しました。';
-    mockUseActionState.mockReturnValue([
-      { error: errorMessage },
-      jest.fn(),
-      false
-    ]);
+    mockUseActionState.mockReturnValue([{ error: errorMessage }, jest.fn(), false]);
 
     render(<Component />);
 
@@ -83,11 +77,7 @@ describe('Signup Component', () => {
   it('フォームの送信', async () => {
     const user = userEvent.setup();
     const mockFormAction = jest.fn();
-    mockUseActionState.mockReturnValue([
-      { error: '' },
-      mockFormAction,
-      false
-    ]);
+    mockUseActionState.mockReturnValue([{ error: '' }, mockFormAction, false]);
 
     render(<Component />);
 

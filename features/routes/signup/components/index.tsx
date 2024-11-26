@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import InputText from "@/components/common/InputText";
-import { Label } from "@/components/ui/label";
-import { signupAction } from "../actions/signup";
+import Link from 'next/link';
+import InputText from '@/components/common/InputText';
+import { Label } from '@/components/ui/label';
+import { signupAction } from '../actions/signup';
 import { useActionState } from 'react';
-import PrimaryButton from "@/components/common/PrimaryButton";
+import PrimaryButton from '@/components/common/PrimaryButton';
 
 const initialState = {
   error: '',
 };
 
 export default function Component() {
-  const [state, formAction,] = useActionState(signupAction, initialState);
+  const [state, formAction] = useActionState(signupAction, initialState);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto bg-white p-8 border border-gray-300 rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold mb-6 text-center">サインアップ</h1>
+    <div className="flex min-h-screen flex-col">
+      <main className="container mx-auto flex-grow px-4 py-8">
+        <div className="mx-auto max-w-md rounded-lg border border-gray-300 bg-white p-8 shadow-lg">
+          <h1 className="mb-6 text-center text-2xl font-bold">サインアップ</h1>
           <form className="mt-8 space-y-6" action={formAction}>
             <div className="space-y-4">
               <div>
@@ -43,13 +43,13 @@ export default function Component() {
               </div>
             </div>
             {state && state.error && (
-              <div className="text-red-500 text-sm text-center">{state.error}</div>
+              <div className="text-center text-sm text-red-500">{state.error}</div>
             )}
             <div>
               <PrimaryButton type="submit">サインアップ</PrimaryButton>
             </div>
           </form>
-          <div className="text-sm text-center mt-3">
+          <div className="mt-3 text-center text-sm">
             <p>アカウントをお持ちですか？</p>
             <Link
               href="/login"

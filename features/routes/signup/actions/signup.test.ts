@@ -1,9 +1,9 @@
 import { signupAction } from './signup';
-import { createClient } from "@/lib/supabase/client/serverClient";
+import { createClient } from '@/lib/supabase/client/serverClient';
 import { redirect } from 'next/navigation';
 
 // 依存関係のモック
-jest.mock("@/lib/supabase/client/serverClient", () => ({
+jest.mock('@/lib/supabase/client/serverClient', () => ({
   createClient: jest.fn(),
 }));
 
@@ -36,7 +36,9 @@ describe('signupAction', () => {
 
     const result = await signupAction({}, formData);
 
-    expect(result).toEqual({ error: "入力内容に誤りがあります。すべての項目を正しく入力してください。" });
+    expect(result).toEqual({
+      error: '入力内容に誤りがあります。すべての項目を正しく入力してください。',
+    });
   });
 
   it('パスワードが8文字未満の場合、エラーを返す', async () => {
@@ -46,7 +48,9 @@ describe('signupAction', () => {
 
     const result = await signupAction({}, formData);
 
-    expect(result).toEqual({ error: "入力内容に誤りがあります。すべての項目を正しく入力してください。" });
+    expect(result).toEqual({
+      error: '入力内容に誤りがあります。すべての項目を正しく入力してください。',
+    });
   });
 
   it('サインアップが失敗した場合、エラーを返す', async () => {
@@ -58,7 +62,7 @@ describe('signupAction', () => {
 
     const result = await signupAction({}, formData);
 
-    expect(result).toEqual({ error: "サインアップに失敗しました。再度お試しください。" });
+    expect(result).toEqual({ error: 'サインアップに失敗しました。再度お試しください。' });
   });
 
   it('サインアップが成功した場合、Topページにリダイレクトする', async () => {
@@ -82,6 +86,6 @@ describe('signupAction', () => {
 
     const result = await signupAction({}, formData);
 
-    expect(result).toEqual({ error: "サインアップに失敗しました。再度お試しください。" });
+    expect(result).toEqual({ error: 'サインアップに失敗しました。再度お試しください。' });
   });
 });

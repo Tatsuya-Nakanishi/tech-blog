@@ -1,4 +1,4 @@
-import LoadingUI from "@/app/loading";
+import LoadingUI from '@/app/loading';
 
 export default function Loading() {
   return (

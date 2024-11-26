@@ -29,13 +29,7 @@ const mockCategories = [
   { name: 'PHP' },
 ];
 
-const mockArchives = [
-  '2023年5月',
-  '2023年4月',
-  '2023年3月',
-  '2023年2月',
-  '2023年1月',
-];
+const mockArchives = ['2023年5月', '2023年4月', '2023年3月', '2023年2月', '2023年1月'];
 
 export const Default: Story = {
   args: {

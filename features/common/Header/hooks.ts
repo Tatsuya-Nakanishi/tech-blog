@@ -1,9 +1,9 @@
 // hooks.ts
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client/browserClient";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client/browserClient';
+import { useRouter } from 'next/navigation';
 
 // メニューの開閉と外部クリックを管理するカスタムフック
 export function useMenu() {
@@ -21,9 +21,9 @@ export function useMenu() {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [menuElement]);
 
@@ -36,15 +36,15 @@ export function useUser() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push("/login");
+    router.push('/login');
   };
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("Logout error:", error.message);
+      console.error('Logout error:', error.message);
     } else {
-      router.push("/");
+      router.push('/');
       router.refresh();
     }
   };

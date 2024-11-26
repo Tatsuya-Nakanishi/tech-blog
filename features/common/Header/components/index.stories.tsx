@@ -3,7 +3,6 @@ import { Meta, StoryObj } from '@storybook/react';
 import Header from './index';
 import { UserType } from '@/types/user';
 
-
 const meta: Meta<typeof Header> = {
   title: 'Features/Common/Header',
   component: Header,
@@ -33,13 +32,13 @@ const mockedUser: UserType = {
 };
 
 export const LoggedIn: Story = {
-    args: {
-    user: mockedUser
+  args: {
+    user: mockedUser,
   },
-}
+};
 
 export const LoggedOut: Story = {
-    args: {
-    user: null
+  args: {
+    user: null,
   },
-}
+};

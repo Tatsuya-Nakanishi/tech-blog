@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 
 export function useLoading() {
-    const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-    return {
-        isLoading,
-        setIsLoading
-    };
+  return {
+    isLoading,
+    setIsLoading,
+  };
 }

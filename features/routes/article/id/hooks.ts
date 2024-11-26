@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { ArticleType } from "@/types/article";
-import { CommentType } from "@/types/comment";
-import { createClient } from "@/lib/supabase/client/browserClient";
-import { UserType } from "@/types/user";
+import { useState, useEffect } from 'react';
+import { ArticleType } from '@/types/article';
+import { CommentType } from '@/types/comment';
+import { createClient } from '@/lib/supabase/client/browserClient';
+import { UserType } from '@/types/user';
 import { useLoading } from '@/contexts/LoadingContext';
 
 type TableOfContentsItem = {
@@ -17,7 +17,7 @@ export function useArticleDetail(
   initialComments: CommentType[],
   article: ArticleType,
   user: UserType | null,
-  isLiked: boolean,
+  isLiked: boolean
 ) {
   const { setIsLoading } = useLoading();
   const supabase = createClient();
@@ -25,10 +25,8 @@ export function useArticleDetail(
   const [likes, setLikes] = useState(initialLikes);
   const [isAlreadyLiked, setIsAlreadyLiked] = useState(isLiked);
   const [comments, setComments] = useState<CommentType[]>(initialComments);
-  const [newComment, setNewComment] = useState("");
-  const [tableOfContents, setTableOfContents] = useState<TableOfContentsItem[]>(
-    []
-  );
+  const [newComment, setNewComment] = useState('');
+  const [tableOfContents, setTableOfContents] = useState<TableOfContentsItem[]>([]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleLike = async () => {
@@ -37,7 +35,7 @@ export function useArticleDetail(
       return;
     }
 
-     try {
+    try {
       setIsLoading(true);
       const { data: existingLike, error: fetchError } = await supabase
         .from('likes')
@@ -63,7 +61,7 @@ export function useArticleDetail(
           return;
         }
 
-        setLikes(prevLikes => Math.max(0, prevLikes - 1));
+        setLikes((prevLikes) => Math.max(0, prevLikes - 1));
         setIsAlreadyLiked(false);
       } else {
         const { error: insertError } = await supabase
@@ -75,7 +73,7 @@ export function useArticleDetail(
           return;
         }
 
-        setLikes(prevLikes => prevLikes + 1);
+        setLikes((prevLikes) => prevLikes + 1);
         setIsAlreadyLiked(true);
       }
     } catch (error) {
@@ -97,35 +95,35 @@ export function useArticleDetail(
     }
 
     try {
-        setIsLoading(true);
-        const { data, error } = await supabase
-          .from('comments')
-          .insert({
-            user_id: user.id,
-            article_id: article.id,
-            content: newComment
-          })
-          .select('*, users(id, nickname, avatar_url)')
-          .single();
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('comments')
+        .insert({
+          user_id: user.id,
+          article_id: article.id,
+          content: newComment,
+        })
+        .select('*, users(id, nickname, avatar_url)')
+        .single();
 
-        if (error) throw error;
+      if (error) throw error;
 
-        const newCommentObj: CommentType = {
-          id: data.id,
-          author: data.users?.nickname || user.nickname || "匿名",
-          avatar: data.users?.avatar_url || user.avatar_url || "",
-          userId: data.users?.id || '',
-          date: new Date(data.created_at).toLocaleDateString(),
-          content: data.content,
-        };
+      const newCommentObj: CommentType = {
+        id: data.id,
+        author: data.users?.nickname || user.nickname || '匿名',
+        avatar: data.users?.avatar_url || user.avatar_url || '',
+        userId: data.users?.id || '',
+        date: new Date(data.created_at).toLocaleDateString(),
+        content: data.content,
+      };
 
-        setComments(prevComments => [...prevComments, newCommentObj]);
-        setNewComment("");
-      } catch (error) {
-        console.error('コメントの送信エラー:', error);
-      } finally {
-        setIsLoading(false);
-      }
+      setComments((prevComments) => [...prevComments, newCommentObj]);
+      setNewComment('');
+    } catch (error) {
+      console.error('コメントの送信エラー:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCommentDelete = async (commentId: string) => {
@@ -144,7 +142,9 @@ export function useArticleDetail(
 
       if (error) throw error;
 
-      setComments(prevComments => prevComments.filter(comment => comment.id !== commentId));
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId)
+      );
     } catch (error) {
       console.error('コメントの削除エラー:', error);
     } finally {
@@ -155,14 +155,12 @@ export function useArticleDetail(
   useEffect(() => {
     // 記事のサマリーから目次を生成
     const parser = new DOMParser();
-    const doc = parser.parseFromString(article.content, "text/html");
-    const headings = doc.querySelectorAll("h1");
-    const tocItems: TableOfContentsItem[] = Array.from(headings).map(
-      (heading) => ({
-        id: heading.id,
-        text: heading.textContent || "",
-      })
-    );
+    const doc = parser.parseFromString(article.content, 'text/html');
+    const headings = doc.querySelectorAll('h1');
+    const tocItems: TableOfContentsItem[] = Array.from(headings).map((heading) => ({
+      id: heading.id,
+      text: heading.textContent || '',
+    }));
 
     setTableOfContents(tocItems);
   }, [article.content]);
@@ -178,6 +176,6 @@ export function useArticleDetail(
     tableOfContents,
     isLoginModalOpen,
     setIsLoginModalOpen,
-    isAlreadyLiked
+    isAlreadyLiked,
   };
 }

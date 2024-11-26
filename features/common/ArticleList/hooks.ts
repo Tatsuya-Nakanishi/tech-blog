@@ -1,14 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { ArticleType } from "@/types/article";
-import { createClient } from "@/lib/supabase/client/browserClient";
+import { useState } from 'react';
+import { ArticleType } from '@/types/article';
+import { createClient } from '@/lib/supabase/client/browserClient';
 import { useLoading } from '@/contexts/LoadingContext';
-import { ITEMS_PER_PAGE } from "@/constants/pagination";
+import { ITEMS_PER_PAGE } from '@/constants/pagination';
 
 export function useArticleList(initialArticles: ArticleType[], initialHasMore: boolean) {
-  const [articleList, setArticleList] =
-    useState<ArticleType[]>(initialArticles);
+  const [articleList, setArticleList] = useState<ArticleType[]>(initialArticles);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [page, setPage] = useState(1);
   const { setIsLoading } = useLoading();
@@ -20,7 +19,8 @@ export function useArticleList(initialArticles: ArticleType[], initialHasMore: b
 
     const { data, error, count } = await supabase
       .from('articles')
-      .select(`
+      .select(
+        `
         id,
         title,
         content,
@@ -30,7 +30,9 @@ export function useArticleList(initialArticles: ArticleType[], initialHasMore: b
         article_categories (
           categories (name)
         )
-      `, { count: 'exact' })
+      `,
+        { count: 'exact' }
+      )
       .order('created_at', { ascending: false })
       .range(start, end);
 
@@ -38,7 +40,7 @@ export function useArticleList(initialArticles: ArticleType[], initialHasMore: b
       throw new Error('記事取得エラー');
     }
 
-    const newArticles = data.map(article => ({
+    const newArticles = data.map((article) => ({
       id: article.id,
       title: article.title,
       content: article.content,
@@ -46,11 +48,11 @@ export function useArticleList(initialArticles: ArticleType[], initialHasMore: b
       description: article.description,
       created_at: article.created_at,
       categories: article.article_categories
-        .map(ac => ac.categories?.name)
-        .filter(Boolean)
+        .map((ac) => ac.categories?.name)
+        .filter(Boolean),
     }));
 
-    const hasMore = count ? count > ((page + 1) * pageSize) : false;
+    const hasMore = count ? count > (page + 1) * pageSize : false;
 
     return { articles: newArticles, hasMore };
   };
@@ -59,12 +61,13 @@ export function useArticleList(initialArticles: ArticleType[], initialHasMore: b
     try {
       setIsLoading(true);
       const nextPage = page + 1;
-      const { articles: newArticles, hasMore: newHasMore } = await loadMoreArticles(nextPage);
-      setArticleList(prevArticles => [...prevArticles, ...newArticles]);
+      const { articles: newArticles, hasMore: newHasMore } =
+        await loadMoreArticles(nextPage);
+      setArticleList((prevArticles) => [...prevArticles, ...newArticles]);
       setHasMore(newHasMore);
       setPage(nextPage);
     } catch (error) {
-      console.error("記事の読み込みに失敗しました:", error);
+      console.error('記事の読み込みに失敗しました:', error);
     } finally {
       setIsLoading(false);
     }

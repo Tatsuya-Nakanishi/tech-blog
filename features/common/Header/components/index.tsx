@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { User as UserIcon, LogOut, Menu } from "lucide-react";
-import Avatar from "@/components/common/Avatar";
-import { useMenu, useUser } from "../hooks";
-import { UserType } from "@/types/user";
+import Link from 'next/link';
+import { User as UserIcon, LogOut, Menu } from 'lucide-react';
+import Avatar from '@/components/common/Avatar';
+import { useMenu, useUser } from '../hooks';
+import { UserType } from '@/types/user';
 
 type PropType = {
   user: UserType | null;
@@ -15,12 +15,12 @@ export default function Header({ user }: PropType) {
   const { handleLogin, handleLogout } = useUser();
 
   return (
-    <header className="bg-purple-800 text-white sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <header className="sticky top-0 z-50 bg-purple-800 text-white">
+      <div className="container mx-auto flex items-center justify-between px-4 py-4">
         <Link href="/top" className="text-2xl font-bold">
           TATSULOG
         </Link>
-        <nav className="hidden md:flex items-center space-x-4">
+        <nav className="hidden items-center space-x-4 md:flex">
           {user ? (
             <>
               <Link href="/identity/mypage" className="hover:underline">
@@ -29,11 +29,7 @@ export default function Header({ user }: PropType) {
               <button onClick={handleLogout} className="hover:underline">
                 ログアウト
               </button>
-              <Avatar
-                className="h-8 w-8"
-                src={user.avatar_url || ""}
-                alt={"icon"}
-              />
+              <Avatar className="h-8 w-8" src={user.avatar_url || ''} alt={'icon'} />
             </>
           ) : (
             <>
@@ -50,20 +46,16 @@ export default function Header({ user }: PropType) {
           <button
             className="p-2 focus:outline-none"
             onClick={toggleMenu}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
             {user ? (
-              <Avatar
-                className="h-8 w-8"
-                src={user.avatar_url || ""}
-                alt={"icon"}
-              />
+              <Avatar className="h-8 w-8" src={user.avatar_url || ''} alt={'icon'} />
             ) : (
               <Menu className="h-6 w-6" />
             )}
           </button>
           {isMenuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+            <div className="absolute right-0 z-50 mt-2 w-48 rounded-md bg-white py-1 shadow-lg">
               {user ? (
                 <>
                   <Link
@@ -71,7 +63,7 @@ export default function Header({ user }: PropType) {
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <UserIcon className="inline-block w-4 h-4 mr-2" />
+                    <UserIcon className="mr-2 inline-block h-4 w-4" />
                     マイページ
                   </Link>
                   <button
@@ -79,9 +71,9 @@ export default function Header({ user }: PropType) {
                       handleLogout();
                       setIsMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
+                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-purple-100"
                   >
-                    <LogOut className="inline-block w-4 h-4 mr-2" />
+                    <LogOut className="mr-2 inline-block h-4 w-4" />
                     ログアウト
                   </button>
                 </>
@@ -95,7 +87,7 @@ export default function Header({ user }: PropType) {
                       setIsMenuOpen(false);
                     }}
                   >
-                    <UserIcon className="inline-block w-4 h-4 mr-2" />
+                    <UserIcon className="mr-2 inline-block h-4 w-4" />
                     ログイン
                   </Link>
                   <Link
@@ -103,7 +95,7 @@ export default function Header({ user }: PropType) {
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <UserIcon className="inline-block w-4 h-4 mr-2" />
+                    <UserIcon className="mr-2 inline-block h-4 w-4" />
                     新規登録
                   </Link>
                 </>

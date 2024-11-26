@@ -1,9 +1,9 @@
 import { loginAction } from './login';
-import { createClient } from "@/lib/supabase/client/serverClient";
+import { createClient } from '@/lib/supabase/client/serverClient';
 import { redirect } from 'next/navigation';
 
 // 依存関係のモック
-jest.mock("@/lib/supabase/client/serverClient", () => ({
+jest.mock('@/lib/supabase/client/serverClient', () => ({
   createClient: jest.fn(),
 }));
 
@@ -36,7 +36,9 @@ describe('loginAction', () => {
 
     const result = await loginAction({}, formData);
 
-    expect(result).toEqual({ error: "メールアドレスとパスワードを正しく入力してください。" });
+    expect(result).toEqual({
+      error: 'メールアドレスとパスワードを正しく入力してください。',
+    });
   });
 
   it('パスワードが空の場合、エラーを返す', async () => {
@@ -46,7 +48,9 @@ describe('loginAction', () => {
 
     const result = await loginAction({}, formData);
 
-    expect(result).toEqual({ error: "メールアドレスとパスワードを正しく入力してください。" });
+    expect(result).toEqual({
+      error: 'メールアドレスとパスワードを正しく入力してください。',
+    });
   });
 
   it('ログインが失敗した場合、エラーを返す', async () => {
@@ -58,7 +62,7 @@ describe('loginAction', () => {
 
     const result = await loginAction({}, formData);
 
-    expect(result).toEqual({ error: "ログインに失敗しました。再度お試しください。" });
+    expect(result).toEqual({ error: 'ログインに失敗しました。再度お試しください。' });
   });
 
   it('ログインが成功した場合、Topページにリダイレクトする', async () => {
@@ -82,6 +86,6 @@ describe('loginAction', () => {
 
     const result = await loginAction({}, formData);
 
-    expect(result).toEqual({ error: "ログインに失敗しました。再度お試しください。" });
+    expect(result).toEqual({ error: 'ログインに失敗しました。再度お試しください。' });
   });
 });

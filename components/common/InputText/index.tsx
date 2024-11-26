@@ -1,6 +1,6 @@
 import React from 'react';
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name?: string;

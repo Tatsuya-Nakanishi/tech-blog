@@ -1,4 +1,4 @@
-import type { MicroCMSImage, MicroCMSDate } from "microcms-js-sdk";
+import type { MicroCMSImage, MicroCMSDate } from 'microcms-js-sdk';
 
 // カテゴリの型定義
 export type Category = {
