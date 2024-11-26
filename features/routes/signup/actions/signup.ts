@@ -9,11 +9,7 @@ const signupSchema = z.object({
   password: z.string().min(8, 'パスワードは8文字以上である必要があります。'),
 });
 
-type LoginState = {
-  error?: string;
-};
-
-export async function signupAction(prevState: LoginState, formData: FormData) {
+export async function signupAction(prevState: any, formData: FormData) {
   const supabase = await createClient();
   let redirectTo = '';
 

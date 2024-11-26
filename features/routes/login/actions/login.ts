@@ -9,11 +9,7 @@ const loginSchema = z.object({
   password: z.string().min(1, 'パスワードを入力してください。'),
 });
 
-type loginState = {
-  error?: string;
-};
-
-export async function loginAction(prevState: loginState, formData: FormData) {
+export async function loginAction(prevState: any, formData: FormData) {
   const supabase = await createClient();
   let redirectTo = '';
 
