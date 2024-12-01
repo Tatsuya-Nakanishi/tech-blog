@@ -37,6 +37,7 @@
     "microcms-js-sdk": "^3.1.2",
     "next": "15.0.3",
     "next-router-mock": "^0.9.13",
+    "playwright": "^1.49.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "react": "19.0.0-rc-66855b96-20241106",
@@ -48,7 +49,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.2",
-    "@playwright/test": "^1.48.2",
+    "@playwright/test": "^1.49.0",
     "@storybook/addon-essentials": "^8.4.1",
     "@storybook/addon-interactions": "^8.4.1",
     "@storybook/addon-onboarding": "^8.4.1",

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useArticleList } from '../hooks';
+import { useArticleList } from '../hooks/useArticleList';
 import { ArticleType } from '@/types/article';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import Tag from '@/components/common/Tag';
@@ -21,28 +21,28 @@ export default function Component({ articles, heading, initialHasMore }: PropTyp
     initialHasMore
   );
 
-  const handleFetchBlogs = async () => {
-    try {
-      const response = await fetch('/api/cron/linkage_micro_cms', {
-        method: 'GET',
-        cache: 'no-store',
-      });
+  // const handleFetchBlogs = async () => {
+  //   try {
+  //     const response = await fetch('/api/cron/linkage_micro_cms', {
+  //       method: 'GET',
+  //       cache: 'no-store',
+  //     });
 
-      if (response.ok) {
-        console.log('成功');
-      } else {
-        const errorText = await response.text();
-        console.log(errorText);
-      }
-    } catch (err) {
-      console.error('ブログの取得に失敗しました:', err);
-    } finally {
-    }
-  };
+  //     if (response.ok) {
+  //       console.log('成功');
+  //     } else {
+  //       const errorText = await response.text();
+  //       console.log(errorText);
+  //     }
+  //   } catch (err) {
+  //     console.error('ブログの取得に失敗しました:', err);
+  //   } finally {
+  //   }
+  // };
 
   return (
     <div className="md:w-2/3">
-      <PrimaryButton onClick={handleFetchBlogs}>データフェッチ</PrimaryButton>
+      {/* <PrimaryButton onClick={handleFetchBlogs}>データフェッチ</PrimaryButton> */}
       <h2 className="mb-4 text-2xl font-bold">{heading}</h2>
       {/* 記事が存在する場合 */}
       {articleList.length > 0 ? (
