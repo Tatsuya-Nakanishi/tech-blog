@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { User as UserIcon, LogOut, Menu } from 'lucide-react';
 import Avatar from '@/components/common/Avatar';
-import { useMenu, useUser } from '../hooks';
+import { useMenu } from '../hooks/useMenu';
+import { useUser } from '../hooks/useUser';
 import { UserType } from '@/types/user';
 
 type PropType = {
@@ -12,7 +13,7 @@ type PropType = {
 
 export default function Header({ user }: PropType) {
   const { isMenuOpen, toggleMenu, setIsMenuOpen, setMenuElement } = useMenu();
-  const { handleLogin, handleLogout } = useUser();
+  const { handleLogout } = useUser();
 
   return (
     <header className="sticky top-0 z-50 bg-purple-800 text-white">
@@ -83,7 +84,6 @@ export default function Header({ user }: PropType) {
                     href="/login"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
                     onClick={() => {
-                      handleLogin();
                       setIsMenuOpen(false);
                     }}
                   >

@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client/serverClient';
 import { UserType } from '@/types/user';
 import './globals.css';
 import { LoadingProvider } from '@/contexts/LoadingContext';
-import GlobalLoading from '@/components/common/GlobalLoading';
+import GlobalLoading from '@/features/common/GlobalLoading';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
